@@ -17,7 +17,8 @@ class CustomerFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'customer_code' => $this->faker->unique()->word(),
+            'name' => $this->faker->name(),
         ];
     }
 }

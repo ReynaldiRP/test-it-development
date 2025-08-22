@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Customer;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,7 +18,10 @@ class TransactionFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'customer_id' => $this->faker->randomElement(Customer::pluck('id')),
+            'invoice_number' => $this->faker->unique()->numerify('INV-#####'),
+            'invoice_date' => $this->faker->date(),
+            'total' => $this->faker->randomFloat(2, 100, 1000),
         ];
     }
 }
