@@ -2,64 +2,103 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Products\ProductStoreRequest;
 use App\Models\Product;
-use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class ProductController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display a listing of the products.
+     * @return Response
      */
-    public function index()
+    public function index(): Response
     {
-        //
+        $products = Product::paginate(5);
+        return Inertia::render('Products/Index', [
+            'products' => $products
+        ]);
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Show the form for creating a new product.
+     * @return Response
      */
-    public function create()
+    public function create(): Response
     {
-        //
+        return Inertia::render('Products/Create');
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a newly created product in storage.
+     * @param ProductStoreRequest $request
+     * @return RedirectResponse
      */
-    public function store(Request $request)
+    public function store(ProductStoreRequest $request): RedirectResponse
     {
-        //
+        try {
+            $product = Product::create($request->validated());
+            return redirect()->route('products.index', $product);
+        } catch (\Exception $th) {
+            return redirect()->back()->withErrors(['error' => 'Failed to create product']);
+        }
+    }
+
+
+    /**
+     * Display the specified product.
+     * @param Product $product
+     * @return Response
+     */
+    public function show(Product $product): Response
+    {
+        return Inertia::render('Products/Show', [
+            'product' => $product
+        ]);
     }
 
     /**
-     * Display the specified resource.
+     * Show the form for editing the specified product.
+     * @param Product $product
+     * @return Response
      */
-    public function show(Product $product)
+    public function edit(Product $product): Response
     {
-        //
+        return Inertia::render('Products/Edit', [
+            'product' => $product
+        ]);
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Update the specified product in storage.
+     * @param ProductStoreRequest $request
+     * @param Product $product
+     * @return RedirectResponse
      */
-    public function edit(Product $product)
+    public function update(ProductStoreRequest $request, Product $product): RedirectResponse
     {
-        //
+        try {
+            $product->update($request->validated());
+            return redirect()->route('products.index', $product);
+        } catch (\Exception $th) {
+            return redirect()->back()->withErrors(['error' => 'Failed to update product']);
+        }
     }
 
     /**
-     * Update the specified resource in storage.
+     * Remove the specified product from storage.
+     * @param Product $product
+     * @return RedirectResponse
      */
-    public function update(Request $request, Product $product)
+    public function destroy(Product $product): RedirectResponse
     {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Product $product)
-    {
-        //
+        try {
+            $product->delete();
+            return redirect()->route('products.index');
+        } catch (\Exception $th) {
+            return redirect()->back()->withErrors(['error' => 'Failed to delete product']);
+        }
     }
 }
