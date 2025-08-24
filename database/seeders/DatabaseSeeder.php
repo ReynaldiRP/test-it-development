@@ -25,16 +25,10 @@ class DatabaseSeeder extends Seeder
 
         // Seed real data
         $this->call([
+            UserSeeder::class,
             ProductSeeder::class,
             CustomerSeeder::class,
+            TransactionSeeder::class,
         ]);
-
-        // Uncomment if you want to seed Indonesia location data
-        // $this->call([
-        //     ProvincesSeeder::class,
-        //     CitiesSeeder::class,
-        //     DistrictsSeeder::class,
-        //     VillagesSeeder::class,
-        // ]);
     }
 }

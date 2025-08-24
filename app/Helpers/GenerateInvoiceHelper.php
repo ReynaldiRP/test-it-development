@@ -18,31 +18,29 @@ class GenerateInvoiceHelper
         $yearMonth = $now->format('ym');
         $prefix = 'INV';
 
-        $currentYear = $now->year();
-        $currentMonth = $now->month();
-
-        $lastInvoice = DB::table('transactions')
-            ->whereYear('created_at', $currentYear)
-            ->whereMonth('created_at', $currentMonth)
+        $count = DB::table('transactions')
             ->where('invoice_number', 'LIKE', "{$prefix}/{$yearMonth}/%")
-            ->orderBy('invoice_number', 'desc')
-            ->first();
+            ->count();
 
-        $nextNumber = 1;
+        $nextNumber = $count + 1;
 
-        if ($lastInvoice) {
-            $parts = explode('/', $lastInvoice->invoice_number);
-            if (count($parts) === 3) {
-                $lastSequential = (int) $parts[2];
-                $nextNumber = $lastSequential + 1;
+        do {
+            $sequentialNumber = str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+            $invoiceNumber = "{$prefix}/{$yearMonth}/{$sequentialNumber}";
+
+            $exists = DB::table('transactions')
+                ->where('invoice_number', $invoiceNumber)
+                ->exists();
+
+            if (!$exists) {
+                break;
             }
-        }
 
-        $sequentialNumber = str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+            $nextNumber++;
+        } while (true);
 
-        return "{$prefix}/{$yearMonth}/{$sequentialNumber}";
+        return $invoiceNumber;
     }
-
     /**
      * Format the invoice date.
      *

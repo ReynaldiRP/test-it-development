@@ -42,13 +42,13 @@ const mainNavItems: NavItem[] = [
 
 const rightNavItems: NavItem[] = [
     {
-        title: 'Repository',
-        href: 'https://github.com/laravel/vue-starter-kit',
+        title: 'GitHub Repository',
+        href: 'https://github.com/your-username/transaction-management-system',
         icon: Folder,
     },
     {
-        title: 'Documentation',
-        href: 'https://laravel.com/docs/starter-kits#vue',
+        title: 'Help Documentation',
+        href: '/help',
         icon: BookOpen,
     },
 ];

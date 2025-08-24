@@ -132,19 +132,16 @@ class CustomerController extends Controller
         try {
             $validated = $request->validated();
 
-            // Get location names from codes
             $provinceName = DB::table('indonesia_provinces')->where('code', $validated['location']['province'])->value('name') ?? $validated['location']['province'];
             $cityName = DB::table('indonesia_cities')->where('code', $validated['location']['cities'])->value('name') ?? $validated['location']['cities'];
             $districtName = DB::table('indonesia_districts')->where('code', $validated['location']['district'])->value('name') ?? $validated['location']['district'];
             $subdistrictName = DB::table('indonesia_villages')->where('code', $validated['location']['subdistrict'])->value('name') ?? $validated['location']['subdistrict'];
 
-            // Update customer basic info
             $customer->update([
                 'customer_code' => $validated['customer_code'],
                 'name' => $validated['name'],
             ]);
 
-            // Update location
             $customer->location()->update([
                 'address' => $validated['location']['address'],
                 'province' => $provinceName,

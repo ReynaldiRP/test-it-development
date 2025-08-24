@@ -30,9 +30,17 @@ class TransactionUpdateRequest extends FormRequest
     {
         return [
             'customer_id' => 'required|exists:customers,id',
-            'invoice_number' => 'required|string|max:255|unique:transactions,invoice_number,' . $this->route('transaction')->id,
             'invoice_date' => 'required|date',
             'total' => 'required|numeric|min:0',
+            'items' => 'required|array|min:1',
+            'items.*.product_id' => 'required|exists:products,id',
+            'items.*.quantity' => 'required|integer|min:1',
+            'items.*.price_at_time' => 'required|numeric|min:0',
+            'items.*.disc1' => 'nullable|numeric|min:0|max:100',
+            'items.*.disc2' => 'nullable|numeric|min:0|max:100',
+            'items.*.disc3' => 'nullable|numeric|min:0|max:100',
+            'items.*.net_price' => 'required|numeric|min:0',
+            'items.*.amount' => 'required|numeric|min:0',
         ];
     }
 }

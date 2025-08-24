@@ -1,11 +1,14 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "laravel/vue-starter-kit",
+    "name": "transaction-management-system",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
+    "description": "A modern web application for managing transactions, customers, and products with multi-tier discount calculations and stock management.",
     "keywords": [
         "laravel",
-        "framework"
+        "vue",
+        "transaction",
+        "inventory",
+        "management"
     ],
     "license": "MIT",
     "require": {

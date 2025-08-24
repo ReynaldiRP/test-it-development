@@ -29,18 +29,39 @@ class TransactionStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'customer_id' => 'required|exists:customers,id',
-            'invoice_number' => 'required|string|max:255|unique:transactions,invoice_number',
+            'customer_id' => 'required|integer|exists:customers,id',
             'invoice_date' => 'required|date',
             'total' => 'required|numeric|min:0',
 
-            // Detail transaction
-            'items' => 'required|array',
-            'items.*.product_id' => 'required|exists:products,id',
+            'items' => 'required|array|min:1',
+            'items.*.product_id' => 'required|integer|exists:products,id',
             'items.*.quantity' => 'required|integer|min:1',
+            'items.*.price_at_time' => 'required|numeric|min:0',
             'items.*.disc1' => 'nullable|numeric|min:0|max:100',
             'items.*.disc2' => 'nullable|numeric|min:0|max:100',
             'items.*.disc3' => 'nullable|numeric|min:0|max:100',
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'customer_id.required' => 'Customer is required.',
+            'customer_id.exists' => 'Selected customer does not exist.',
+            'invoice_date.required' => 'Invoice date is required.',
+            'total.required' => 'Total amount is required.',
+            'total.min' => 'Total amount must be greater than 0.',
+            'items.required' => 'At least one item is required.',
+            'items.min' => 'At least one item is required.',
+            'items.*.product_id.required' => 'Product selection is required for each item.',
+            'items.*.product_id.exists' => 'Selected product does not exist.',
+            'items.*.quantity.required' => 'Quantity is required for each item.',
+            'items.*.quantity.min' => 'Quantity must be at least 1.',
+            'items.*.price_at_time.required' => 'Price is required for each item.',
+            'items.*.price_at_time.min' => 'Price cannot be negative.',
+            'items.*.disc1.max' => 'Discount 1 cannot exceed 100%.',
+            'items.*.disc2.max' => 'Discount 2 cannot exceed 100%.',
+            'items.*.disc3.max' => 'Discount 3 cannot exceed 100%.',
         ];
     }
 }

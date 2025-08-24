@@ -30,7 +30,7 @@ class CustomerUpdateRequest extends FormRequest
      */
     public function rules(): array
     {
-        $customer = $this->route('customer')->id; // @phpstan-ignore-line
+        $customer = $this->route('customer')->id;
 
         return [
             'customer_code' => 'required|string|max:255|unique:customers,customer_code,' . $customer,
