@@ -30,6 +30,10 @@ A modern web application built with Laravel and Vue.js for managing transactions
 - PrimeVue - Vue UI component library
 - Vite - Fast build tool
 
+## 🛢 Design ERD (Entity Relational Diagram)
+
+![ERD Diagram](./public/test-it-development.png)
+
 ## 📋 Requirements
 
 - PHP 8.2 or higher
