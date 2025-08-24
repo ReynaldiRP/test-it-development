@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Products\ProductStoreRequest;
+use App\Http\Requests\Products\ProductUpdateRequest;
 use App\Models\Product;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
@@ -16,8 +17,8 @@ class ProductController extends Controller
      */
     public function index(): Response
     {
-        $products = Product::paginate(5);
-        return Inertia::render('Products/Index', [
+        $products = Product::all();
+        return Inertia::render('products/Index', [
             'products' => $products
         ]);
     }
@@ -28,7 +29,7 @@ class ProductController extends Controller
      */
     public function create(): Response
     {
-        return Inertia::render('Products/Create');
+        return Inertia::render('products/Create');
     }
 
     /**
@@ -39,10 +40,10 @@ class ProductController extends Controller
     public function store(ProductStoreRequest $request): RedirectResponse
     {
         try {
-            $product = Product::create($request->validated());
-            return redirect()->route('products.index', $product);
+            Product::create($request->validated());
+            return redirect()->route('products.index')->with('success', 'Product created successfully');
         } catch (\Exception $th) {
-            return redirect()->back()->withErrors(['error' => 'Failed to create product']);
+            return redirect()->back()->withErrors(['error' => 'Failed to create product: ' . $th->getMessage()]);
         }
     }
 
@@ -54,7 +55,7 @@ class ProductController extends Controller
      */
     public function show(Product $product): Response
     {
-        return Inertia::render('Products/Show', [
+        return Inertia::render('products/Show', [
             'product' => $product
         ]);
     }
@@ -66,24 +67,24 @@ class ProductController extends Controller
      */
     public function edit(Product $product): Response
     {
-        return Inertia::render('Products/Edit', [
+        return Inertia::render('products/Edit', [
             'product' => $product
         ]);
     }
 
     /**
      * Update the specified product in storage.
-     * @param ProductStoreRequest $request
+     * @param ProductUpdateRequest $request
      * @param Product $product
      * @return RedirectResponse
      */
-    public function update(ProductStoreRequest $request, Product $product): RedirectResponse
+    public function update(ProductUpdateRequest $request, Product $product): RedirectResponse
     {
         try {
             $product->update($request->validated());
-            return redirect()->route('products.index', $product);
+            return redirect()->route('products.index')->with('success', 'Product updated successfully');
         } catch (\Exception $th) {
-            return redirect()->back()->withErrors(['error' => 'Failed to update product']);
+            return redirect()->back()->withErrors(['error' => 'Failed to update product: ' . $th->getMessage()]);
         }
     }
 
@@ -95,10 +96,17 @@ class ProductController extends Controller
     public function destroy(Product $product): RedirectResponse
     {
         try {
+            // Check if product has been used in transactions
+            if ($product->detailTransactions()->exists()) {
+                return redirect()->back()->withErrors([
+                    'error' => 'Cannot delete product. This product has been used in transactions.'
+                ]);
+            }
+
             $product->delete();
-            return redirect()->route('products.index');
+            return redirect()->route('products.index')->with('success', 'Product deleted successfully');
         } catch (\Exception $th) {
-            return redirect()->back()->withErrors(['error' => 'Failed to delete product']);
+            return redirect()->back()->withErrors(['error' => 'Failed to delete product: ' . $th->getMessage()]);
         }
     }
 }

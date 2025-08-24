@@ -34,9 +34,24 @@ class ProductUpdateRequest extends FormRequest
 
         return [
             'product_code' => 'required|string|max:255|unique:products,product_code,' . $product,
-            'name' => 'required|alpha_num|max:255',
+            'name' => 'required|string|max:255',
             'price' => 'required|numeric|min:0',
             'stock' => 'required|integer|min:0',
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'product_code.unique' => 'Product code already exists. Please use a different code.',
+            'product_code.required' => 'Product code is required.',
+            'name.required' => 'Product name is required.',
+            'price.required' => 'Product price is required.',
+            'price.numeric' => 'Product price must be a valid number.',
+            'price.min' => 'Product price cannot be negative.',
+            'stock.required' => 'Product stock is required.',
+            'stock.integer' => 'Product stock must be a valid integer.',
+            'stock.min' => 'Product stock cannot be negative.',
         ];
     }
 }

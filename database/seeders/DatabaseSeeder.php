@@ -22,10 +22,14 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // User::factory(10)->create();
-        // Customer::factory(5)->create();
-        // Product::factory(5)->create();
-        // Transaction::factory(5)->create();
-        // DetailTransaction::factory(5)->create();
+
+        // Seed real data
+        $this->call([
+            ProductSeeder::class,
+            CustomerSeeder::class,
+        ]);
+
+        // Uncomment if you want to seed Indonesia location data
         // $this->call([
         //     ProvincesSeeder::class,
         //     CitiesSeeder::class,

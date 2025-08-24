@@ -3,7 +3,7 @@ import PlaceholderPattern from '@/components/PlaceholderPattern.vue';
 import Button from '@/components/ui/button/Button.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { BreadcrumbItem, Session } from '@/types';
-import { Customer } from '@/types/customer';
+import { Product } from '@/types/product';
 import { Head, router, usePage } from '@inertiajs/vue3';
 import { FilterMatchMode } from '@primevue/core/api';
 import { ExternalLink, FilterX, Search } from 'lucide-vue-next';
@@ -11,7 +11,7 @@ import { Column, DataTable, Dialog, IconField, InputIcon, InputText, useToast } 
 import { computed, ComputedRef, onMounted, ref } from 'vue';
 
 const props = defineProps<{
-    customers: Customer[];
+    products: Product[];
 }>();
 
 const loading = ref(false);
@@ -22,18 +22,18 @@ const dt = ref<typeof DataTable | null>(null);
 const showModals = ref(false);
 const toast = useToast();
 const page = usePage();
-const selectedCustomerId = ref<number | null>(null);
+const selectedProductId = ref<number | null>(null);
 
 const session: ComputedRef<Session> = computed(() => page.props.session || {});
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Customers',
-        href: '/customers',
+        title: 'Products',
+        href: '/products',
     },
 ];
 
-const customer = ref<Customer[]>(props.customers);
+const products = ref<Product[]>(props.products);
 
 onMounted(() => {
     if (session.value.success) {
@@ -50,42 +50,42 @@ const clearFilter = () => {
     filters.value.global.value = null;
 };
 
-const editHandler = (customerId: number) => {
-    router.visit(route('customers.edit', { customer: customerId }));
+const editHandler = (productId: number) => {
+    router.visit(route('products.edit', { product: productId }));
 };
 
-const openDeleteModal = (customerId: number) => {
-    selectedCustomerId.value = customerId;
+const openDeleteModal = (productId: number) => {
+    selectedProductId.value = productId;
     showModals.value = true;
 };
 
 const closeDeleteModal = () => {
     showModals.value = false;
-    selectedCustomerId.value = null;
+    selectedProductId.value = null;
 };
 
-const deleteHandler = async (customerId: number) => {
-    console.log('Deleting customer with ID:', customerId);
+const deleteHandler = async (productId: number) => {
+    console.log('Deleting product with ID:', productId);
 
-    router.delete(route('customers.destroy', { customer: customerId }), {
+    router.delete(route('products.destroy', { product: productId }), {
         preserveScroll: true,
         onSuccess: () => {
             toast.add({
                 severity: 'success',
                 summary: 'Success',
-                detail: session.value.success || 'Customer deleted successfully.',
+                detail: session.value.success || 'Product deleted successfully.',
                 life: 3000,
             });
 
-            customer.value = customer.value.filter((customer) => customer.id !== customerId);
+            products.value = products.value.filter((product) => product.id !== productId);
         },
         onError: (errors) => {
             console.log('Session data:', session.value);
-            console.error('Error deleting customer:', errors);
+            console.error('Error deleting product:', errors);
             toast.add({
                 severity: 'error',
                 summary: 'Error',
-                detail: session.value.error || 'Failed to delete customer.',
+                detail: errors.error || 'Failed to delete product.',
                 life: 3000,
             });
         },
@@ -95,8 +95,8 @@ const deleteHandler = async (customerId: number) => {
     });
 };
 
-const viewHandler = (customerId: number) => {
-    router.visit(route('customers.show', { customer: customerId }));
+const viewHandler = (productId: number) => {
+    router.visit(route('products.show', { product: productId }));
 };
 
 const exportCSV = () => {
@@ -104,10 +104,18 @@ const exportCSV = () => {
         (dt.value as any).exportCSV();
     }
 };
+
+const formatCurrency = (value: number): string => {
+    return new Intl.NumberFormat('id-ID', {
+        style: 'currency',
+        currency: 'IDR',
+        minimumFractionDigits: 0,
+    }).format(value);
+};
 </script>
 
 <template>
-    <Head title="Customers" />
+    <Head title="Products" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-2 sm:p-4">
@@ -116,22 +124,22 @@ const exportCSV = () => {
                 <Button
                     variant="default"
                     size="lg"
-                    @click="() => $inertia.visit(route('customers.create'))"
+                    @click="() => $inertia.visit(route('products.create'))"
                     class="mb-4 w-full cursor-pointer sm:w-auto"
                 >
-                    Add Customers
+                    Add Product
                 </Button>
 
                 <DataTable
                     v-model:filters="filters"
-                    :value="customer"
+                    :value="products"
                     tableStyle="min-width: 50rem"
                     showGridlines
                     dataKey="id"
                     :paginator="true"
                     :rows="5"
                     :loading="loading"
-                    :global-filter-fields="['customer_code', 'name']"
+                    :global-filter-fields="['product_code', 'name']"
                     class="mt-4"
                     ref="dt"
                     scrollable
@@ -152,7 +160,7 @@ const exportCSV = () => {
                                     </InputIcon>
                                     <InputText
                                         v-model="filters['global'].value"
-                                        placeholder="Keyword Search"
+                                        placeholder="Search products..."
                                         class="w-full min-w-[200px] sm:w-auto"
                                     />
                                 </IconField>
@@ -163,21 +171,33 @@ const exportCSV = () => {
                             </div>
                         </div>
                     </template>
-                    <template #empty> No Customers found. </template>
-                    <template #loading> Loading Customers data. Please wait. </template>
+                    <template #empty> No Products found. </template>
+                    <template #loading> Loading Products data. Please wait. </template>
                     <Column header="No.">
                         <template #body="slotProps">
                             {{ slotProps.index + 1 }}
                         </template>
                     </Column>
-                    <Column field="customer_code" sortable header="Customer Code">
+                    <Column field="product_code" sortable header="Product Code">
                         <template #body="{ data }">
-                            {{ data.customer_code }}
+                            {{ data.product_code }}
                         </template>
                     </Column>
-                    <Column field="name" sortable header="Customer Name">
+                    <Column field="name" sortable header="Product Name">
                         <template #body="{ data }">
                             {{ data.name || 'N/A' }}
+                        </template>
+                    </Column>
+                    <Column field="price" sortable header="Price">
+                        <template #body="{ data }">
+                            {{ formatCurrency(data.price) }}
+                        </template>
+                    </Column>
+                    <Column field="stock" sortable header="Stock">
+                        <template #body="{ data }">
+                            <span :class="data.stock <= 10 ? 'font-semibold text-red-600' : ''">
+                                {{ data.stock }}
+                            </span>
                         </template>
                     </Column>
                     <Column header="Actions">
@@ -202,10 +222,11 @@ const exportCSV = () => {
                     </Column>
                 </DataTable>
             </div>
-            <Dialog v-model:visible="showModals" modal header="Delete Customer">
+            <Dialog v-model:visible="showModals" modal header="Delete Product">
                 <div class="flex flex-col gap-4">
-                    <p>Are you sure you want to delete this customer?</p>
-                    <Button variant="destructive" size="lg" @click="() => deleteHandler(selectedCustomerId!)" class="cursor-pointer">Confirm</Button>
+                    <p>Are you sure you want to delete this product?</p>
+                    <p class="text-sm text-muted-foreground">Note: Products that have been used in transactions cannot be deleted.</p>
+                    <Button variant="destructive" size="lg" @click="() => deleteHandler(selectedProductId!)" class="cursor-pointer">Confirm</Button>
                     <Button variant="secondary" size="lg" @click="closeDeleteModal">Cancel</Button>
                 </div>
             </Dialog>
