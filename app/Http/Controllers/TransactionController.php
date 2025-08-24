@@ -7,10 +7,12 @@ use App\Http\Requests\Transactions\TransactionStoreRequest;
 use App\Http\Requests\Transactions\TransactionUpdateRequest;
 use App\Models\Product;
 use App\Models\Transaction;
+use DB;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
+
 
 class TransactionController extends Controller
 {
@@ -38,7 +40,7 @@ class TransactionController extends Controller
     /**
      * Store a newly created transactions and detail transactions in storage.
      * @param TransactionStoreRequest $request
-     * @return RedirectResponse
+     * @return RedirectResponse`
      */
     public function store(TransactionStoreRequest $request): RedirectResponse
     {
@@ -56,14 +58,14 @@ class TransactionController extends Controller
             }
 
 
-           $transaction = Transaction::create([
+            $transaction = Transaction::create([
                 'customer_id' => $request->input('customer_id'),
                 'invoice_number' => $invoiceNumber,
                 'invoice_date' => $request->input('invoice_date'),
                 'total' => $request->input('total'),
             ]);
 
-            $this->storeDetailTransactions($request, $transaction->id);
+            $this->storeDetailTransactions($request->input('items', []), $transaction->id);
 
             $this->updateProductStock($request->input('items', []));
 
@@ -195,7 +197,7 @@ class TransactionController extends Controller
         return $totalNetPrice;
     }
 
-    
+
     /**
      * Display the specified transaction.
      * @param Transaction $transaction
@@ -249,6 +251,5 @@ class TransactionController extends Controller
         } catch (\Exception $e) {
             return redirect()->back()->with(['error' => 'Failed to delete transaction']);
         }
-    }
     }
 }

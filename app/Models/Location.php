@@ -9,6 +9,7 @@ class Location extends Model
 {
     protected $fillable = [
         'address',
+        'cities',
         'province',
         'district',
         'sub_district',

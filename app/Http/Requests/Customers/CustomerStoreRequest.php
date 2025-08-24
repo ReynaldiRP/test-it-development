@@ -4,6 +4,12 @@ namespace App\Http\Requests\Customers;
 
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * @method mixed input(string $key = null, mixed $default = null)
+ * @method array all(array $keys = null)
+ * @method bool has(string|array $key)
+ * @method mixed get(string $key, mixed $default = null)
+ */
 class CustomerStoreRequest extends FormRequest
 {
     /**
@@ -22,9 +28,14 @@ class CustomerStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'location_id' => 'nullable|exists:indonesia_villages,id',
-            'customer_code' => 'required|string|max:255|unique:customers,customer_code',
-            'name' => 'required|alpha_num'
+            'code' => 'required|string|max:255|unique:customers,customer_code',
+            'name' => 'required|string|max:255',
+            'location.address' => 'required|string|max:500',
+            'location.province' => 'required|string|max:255',
+            'location.cities' => 'required|string|max:255',
+            'location.district' => 'required|string|max:255',
+            'location.subdistrict' => 'required|string|max:255',
+            'location.postal_code' => 'required|string|max:10',
         ];
     }
 }

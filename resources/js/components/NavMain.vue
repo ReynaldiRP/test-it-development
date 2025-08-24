@@ -8,6 +8,16 @@ defineProps<{
 }>();
 
 const page = usePage();
+
+const isActiveRoute = (item: NavItem) => {
+    const currentUrl = page.url;
+
+    if (item.href === '/dashboard') {
+        return currentUrl === '/dashboard';
+    }
+
+    return currentUrl.startsWith(item.href);
+};
 </script>
 
 <template>
@@ -15,8 +25,8 @@ const page = usePage();
         <SidebarGroupLabel>Platform</SidebarGroupLabel>
         <SidebarMenu>
             <SidebarMenuItem v-for="item in items" :key="item.title">
-                <SidebarMenuButton as-child :is-active="item.href === page.url" :tooltip="item.title">
-                    <Link :href="item.href">
+                <SidebarMenuButton as-child :is-active="isActiveRoute(item)" :tooltip="item.title">
+                    <Link :href="item.routeName ? route(item.routeName) : item.href">
                         <component :is="item.icon" />
                         <span>{{ item.title }}</span>
                     </Link>

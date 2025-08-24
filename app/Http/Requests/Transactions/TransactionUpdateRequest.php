@@ -6,6 +6,10 @@ use Illuminate\Foundation\Http\FormRequest;
 
 /**
  * @method mixed route(string $param = null, mixed $default = null)
+ * @method mixed input(string $key = null, mixed $default = null)
+ * @method array all(array $keys = null)
+ * @method bool has(string|array $key)
+ * @method mixed get(string $key, mixed $default = null)
  */
 class TransactionUpdateRequest extends FormRequest
 {
