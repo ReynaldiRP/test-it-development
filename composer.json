@@ -1,6 +1,6 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "transaction-management-system",
+    "name": "reynaldi/transaction-management-system",
     "type": "project",
     "description": "A modern web application for managing transactions, customers, and products with multi-tier discount calculations and stock management.",
     "keywords": [
